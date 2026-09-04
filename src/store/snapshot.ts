@@ -25,7 +25,7 @@ export interface Snapshot {
   repo: { name: string; path: string; branch: string; commit: string };
   timestamp: string;
   note?: string;
-  git: { modifiedFiles: string[]; diffStat: string };
+  git: { modifiedFiles: string[]; diffStat: string; diffExcerpt?: string };
   terminal: {
     lastCommands: LoggedCommand[];
     lastCommand?: string;
@@ -76,4 +76,8 @@ async function safeReaddir(dir: string): Promise<string[]> {
   } catch {
     return [];
   }
+}
+
+export async function updateLatest(snapshot: Snapshot): Promise<void> {
+  await writeSnapshot(snapshot);
 }

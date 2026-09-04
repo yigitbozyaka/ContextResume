@@ -1,6 +1,6 @@
 # Roadmap
 
-**Current status:** v0.1.0 released. Next: Phase 3 (AI brains).
+**Current status:** Phase 3 complete. Next: Phase 4 (Claude Code handoff and plugin).
 
 This roadmap tracks ContextResume from bootstrap to a v1.0.0 npm release.
 Each phase lists the planned PRs; check them off as they land.
@@ -33,9 +33,9 @@ Target: **v0.1.0**.
 
 ## Phase 3 — AI brains
 
-- [ ] `feat: add claude -p brain`
-- [ ] `feat: add ollama brain`
-- [ ] `feat: add CTXR_BRAIN override and 8s timeout fallback`
+- [x] `feat: add claude -p brain`
+- [x] `feat: add ollama brain`
+- [x] `feat: add CTXR_BRAIN override and configurable timeout fallback`
 
 ## Phase 4 — Claude Code handoff, plugin, ctxr handoff
 
