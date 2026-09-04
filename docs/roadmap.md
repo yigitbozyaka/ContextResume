@@ -1,6 +1,6 @@
 # Roadmap
 
-**Current status:** Phase 0 complete.
+**Current status:** Phase 1 complete. Next: Phase 2 (shell integration).
 
 This roadmap tracks ContextResume from bootstrap to a v1.0.0 npm release.
 Each phase lists the planned PRs; check them off as they land.
@@ -12,11 +12,11 @@ Each phase lists the planned PRs; check them off as they land.
 
 ## Phase 1 — Store + git sensor + heuristic card + secret scrub
 
-- [ ] `feat: add local snapshot store under ~/.context-resume`
-- [ ] `feat: add git sensor (branch, diff stat, modified files)`
-- [ ] `feat: add heuristic brain and resume card renderer`
-- [ ] `feat: add secret scrubbing before snapshot write`
-- [ ] `feat: add pause, resume, and list commands`
+- [x] `feat: add local snapshot store under ~/.context-resume`
+- [x] `feat: add git sensor (branch, diff stat, modified files)`
+- [x] `feat: add heuristic brain and resume card renderer`
+- [x] `feat: add secret scrubbing before snapshot write`
+- [x] `feat: add pause, resume, and list commands`
 
 Target: a working local loop of `ctxr pause` / `ctxr resume` / `ctxr list`
 with no shell integration and no AI brain.
