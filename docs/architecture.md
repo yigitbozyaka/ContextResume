@@ -40,8 +40,10 @@ binary — no git library dependency.
    stat, modified and untracked file paths, and the base branch comparison
    (see `base` in the schema below).
 3. Terminal sensor reads the tail of the current repo's command log
-   (`~/.context-resume/log/<repoId>.jsonl`) — the last N `{ts, cwd, cmd,
-   exitCode}` entries, plus captured output from any `ctxr run` calls.
+   (`<git common dir>/ctxr-log.tsv`) for the branch being paused: the last
+   `ts, cwd, branch, exitCode, cmd` entries, plus captured output from any
+   `ctxr run` calls. A failure counts only if the same command did not
+   succeed later.
 4. The combined sensor output is scrubbed for secrets (see Privacy below).
 5. The heuristic brain runs synchronously for an immediate summary; if
    `claude -p` or Ollama is available, an upgraded summary overwrites it
@@ -76,9 +78,10 @@ last." Instead `ctxr init <bash|zsh|pwsh>` prints a small pure-shell snippet
 that the user evaluates in their shell profile (e.g.
 `eval "$(ctxr init zsh)"`). That snippet hooks the shell's prompt command:
 
-1. On every prompt, it appends one line to
-   `~/.context-resume/log/<repoId>.jsonl`: `{ts, cwd, cmd, exitCode}` for the
-   command that just finished.
+1. On every prompt, it appends one tab-separated line to
+   `<git common dir>/ctxr-log.tsv` (`.git/ctxr-log.tsv`, shared by all
+   worktrees, never tracked): `ts, cwd, branch, exitCode, cmd` for the
+   command that just finished. Tab-separated so the shell needs no escaping.
 2. It also cheaply checks the current git branch against the branch recorded
    on the previous prompt.
 3. Only when the branch changed does the snippet shell out to Node: it runs
@@ -86,9 +89,15 @@ that the user evaluates in their shell profile (e.g.
    just entered. Every other prompt stays pure shell — no Node process.
 
 Output capture is opt-in: `ctxr run <cmd>` executes a command, tees its
-stdout/stderr to the terminal as usual, and stores the last ~30 lines in the
-log entry for that command. Commands run outside `ctxr run` are logged with
+stdout/stderr to the terminal as usual, and stores the last ~40 lines as a
+JSON-encoded sixth field of the log entry for that command. Commands run outside `ctxr run` are logged with
 their exit code but no captured output.
+
+Auto-pause runs after the switch, so the uncommitted changes it records are
+the ones git carried over to the new branch; they belong to the branch being
+left. A note given to `ctxr pause` within the last hour is carried into the
+auto snapshot. Set `CTXR_NO_AUTO=1` to keep logging but disable auto
+pause/resume.
 
 There are no git hooks in this design. Git has no `pre-checkout` hook to
 capture state before a branch switch, and `post-checkout` fires after the
@@ -106,9 +115,9 @@ the same repository, so snapshots taken from any worktree land in the same
 ## Storage layout
 
 ```
+<repo>/.git/ctxr-log.tsv             # terminal sensor: append-only command log
+
 ~/.context-resume/
-  log/
-    <repoId>.jsonl                  # terminal sensor: append-only command log
   repos/
     <repoId>/
       <branch-slug>/

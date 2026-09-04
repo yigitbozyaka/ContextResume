@@ -1,0 +1,16 @@
+ ❯ tests/auth.test.ts > Auth > refreshes expired token 5ms
+   → expected 401 to be 200
+
+ FAIL  tests/auth.test.ts > Auth > refreshes expired token
+AssertionError: expected 401 to be 200
+ ❯ tests/auth.test.ts:42:5
+     40|   const res = await login()
+     41|
+     42|   expect(res.status).toBe(200)
+        |                      ^
+     43|
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  10:00:00
+   Duration  1.20s

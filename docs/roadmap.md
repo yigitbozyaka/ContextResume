@@ -1,6 +1,6 @@
 # Roadmap
 
-**Current status:** Phase 1 complete. Next: Phase 2 (shell integration).
+**Current status:** Phase 2 complete. Next: tag v0.1.0, then Phase 3 (AI brains).
 
 This roadmap tracks ContextResume from bootstrap to a v1.0.0 npm release.
 Each phase lists the planned PRs; check them off as they land.
@@ -23,10 +23,10 @@ with no shell integration and no AI brain.
 
 ## Phase 2 — Shell integration, run, test parser, rerun action
 
-- [ ] `feat: add ctxr init for bash, zsh, and pwsh shell hooks`
-- [ ] `feat: add ctxr run for opt-in output capture`
-- [ ] `feat: add test-output parser for jest, vitest, pytest, go test, cargo test`
-- [ ] `feat: add ENTER rerun action to the resume card`
+- [x] `feat: add ctxr init for bash, zsh, and pwsh shell hooks`
+- [x] `feat: add ctxr run for opt-in output capture`
+- [x] `feat: add test-output parser for jest, vitest, pytest, go test, cargo test`
+- [x] `feat: add ENTER rerun action to the resume card`
 - [ ] `chore: release v0.1.0`
 
 Target: **v0.1.0**.

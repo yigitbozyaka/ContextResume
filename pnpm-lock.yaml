@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@clack/prompts':
+        specifier: ^1.7.0
+        version: 1.7.0
       boxen:
         specifier: ^8.0.1
         version: 8.0.1

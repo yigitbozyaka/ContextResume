@@ -25,14 +25,14 @@ afterEach(async () => {
 
 describe("pause", () => {
   it("writes a snapshot for the current branch with the given note", async () => {
-    const snapshot = await pause("note", repo.dir);
+    const snapshot = await pause("note", {}, repo.dir);
     expect(snapshot.repo.branch).toBe("main");
     expect(snapshot.note).toBe("note");
   });
 
   it("rejects when run outside a git repository", async () => {
     const plain = await mkdtemp(join(tmpdir(), "ctxr-plain-"));
-    await expect(pause("note", plain)).rejects.toThrow("Not inside a git repository.");
+    await expect(pause("note", {}, plain)).rejects.toThrow("Not inside a git repository.");
     try {
       await rm(plain, { recursive: true, force: true });
     } catch {}
@@ -41,13 +41,13 @@ describe("pause", () => {
 
 describe("resume", () => {
   it("returns the snapshot for the current branch", async () => {
-    const saved = await pause("note", repo.dir);
+    const saved = await pause("note", {}, repo.dir);
     const result = await resume(undefined, repo.dir);
     expect(result?.snapshot).toEqual(saved);
   });
 
   it("returns undefined for a branch with no snapshot", async () => {
-    await pause("note", repo.dir);
+    await pause("note", {}, repo.dir);
     const result = await resume("missing", repo.dir);
     expect(result).toBeUndefined();
   });

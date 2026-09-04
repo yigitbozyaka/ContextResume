@@ -1,0 +1,6 @@
+=== RUN   TestRefresh
+--- FAIL: TestRefresh (0.00s)
+    auth_test.go:42: expected 200, got 401
+FAIL
+exit status 1
+FAIL    example.com/pkg/auth   0.003s
