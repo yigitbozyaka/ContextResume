@@ -50,5 +50,5 @@ Remove-Item -Recurse -Force "$HOME\.context-resume"
 
 Please report security vulnerabilities using GitHub's private vulnerability
 reporting for this repository (Security tab -> Report a vulnerability) at
-https://github.com/yigitbozyaka/context-resume. Do not open a public issue
+https://github.com/yigitbozyaka/ContextResume. Do not open a public issue
 for security reports.
