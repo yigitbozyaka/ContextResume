@@ -20,6 +20,7 @@ export function buildProgram(): Command {
     .argument("[note]", "short note about what you were doing")
     .option("--branch <name>", "record the snapshot for this branch instead of the current one")
     .option("--auto", "quiet mode used by the shell hook")
+    .option("--no-ai", "skip AI summarizers and use the heuristic only")
     .description("Save the current branch's context")
     .action(pauseCommand);
 
@@ -29,6 +30,7 @@ export function buildProgram(): Command {
     .argument("[branch]", "branch to resume (defaults to the current one)")
     .option("--json", "print the snapshot as JSON instead of the card")
     .option("--auto", "non-interactive mode used by the shell hook")
+    .option("--no-ai", "skip AI summarizers and use the heuristic only")
     .description("Show the resume card for a branch")
     .action(resumeCommand);
 

@@ -118,3 +118,13 @@ export async function compareWithBase(
     overlappingFiles: [...touched].filter((f) => changedOnBase.has(f)).sort(),
   };
 }
+
+export const diffExcerptMaxChars = 4000;
+
+export async function diffExcerpt(cwd: string): Promise<string | undefined> {
+  const diff = await gitOrUndefined(["diff", "HEAD", "--no-color", "--stat=80", "--patch"], cwd);
+  if (!diff) return undefined;
+  return diff.length > diffExcerptMaxChars
+    ? `${diff.slice(0, diffExcerptMaxChars)}\n... (truncated)`
+    : diff;
+}

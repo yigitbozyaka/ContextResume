@@ -99,6 +99,26 @@ ctxr run pnpm test tests/auth.test.ts
 | `ctxr handoff` | Produce a markdown handoff for a PR comment or a teammate. |
 | `ctxr mcp` | Start the stdio MCP server for Claude Code / Claude Desktop. |
 
+## AI summaries
+
+The card works without any model. If the Claude Code CLI (`claude`) is on
+your PATH, or an [Ollama](https://ollama.com) server is running locally,
+`ctxr pause` and `ctxr resume` use it to turn the raw signals into a one-line
+intent, the blocking error, and a concrete next step. Order: `claude -p`,
+then Ollama, then the built-in heuristic. The automatic hook never waits on a
+model; a manual `ctxr resume` upgrades the stored summary once and caches it.
+
+| Variable | Effect |
+|---|---|
+| `CTXR_BRAIN=claude\|ollama\|heuristic` | Pin one summarizer. |
+| `CTXR_BRAIN_TIMEOUT=30000` | Per-brain timeout in milliseconds. |
+| `CTXR_CLAUDE_MODEL=haiku` | Model passed to `claude -p`. |
+| `CTXR_OLLAMA_HOST`, `CTXR_OLLAMA_MODEL` | Ollama server and model. |
+| `CTXR_NO_AUTO=1` | Keep logging, skip the automatic card on branch change. |
+| `CTXR_DEBUG=1` | Explain why a summarizer was skipped. |
+
+Pass `--no-ai` to `pause` or `resume` to skip models for one call.
+
 ## Claude Code integration
 
 ContextResume is built to hand context to Claude Code, not just to a human:

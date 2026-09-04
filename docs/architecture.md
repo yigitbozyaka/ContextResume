@@ -45,10 +45,9 @@ binary — no git library dependency.
    `ctxr run` calls. A failure counts only if the same command did not
    succeed later.
 4. The combined sensor output is scrubbed for secrets (see Privacy below).
-5. The heuristic brain runs synchronously for an immediate summary; if
-   `claude -p` or Ollama is available, an upgraded summary overwrites it
-   asynchronously before the snapshot is finalized, bounded by an 8-second
-   timeout.
+5. A brain produces the summary (see Brain selection below): a manual
+   `ctxr pause` tries `claude -p`, then Ollama, then the heuristic; the
+   hook's `ctxr pause --auto` uses the heuristic only.
 6. The snapshot is written to
    `~/.context-resume/repos/<repoId>/<branch-slug>/<iso-timestamp>.json` and
    mirrored to `<branch-slug>/latest.json`. Prior snapshots are kept, not
@@ -172,20 +171,40 @@ the base branch, and feeds the "while you were away" section.
 
 ## Brain selection
 
-Brains run in this order and the first one to succeed wins:
+A brain turns the sensor output into `{ intent, lastError, nextAction }`.
+Three exist, tried in this order; the first usable answer wins:
 
-1. **Heuristic** — rule-based, always available, no dependency. Looks at
-   changed file names and the captured test/command output to build a
-   templated summary. Renders immediately.
-2. **`claude -p`** — the headless Claude Code CLI, if installed on the
-   machine. Given the sensor output, produces `{ intent, lastError,
-   nextAction }` as JSON.
-3. **Ollama** — if a server is reachable at `http://localhost:11434`, used
-   as a fallback local model.
+1. **`claude -p`** — the headless Claude Code CLI, if `claude` is on the
+   PATH. Runs with `--model haiku` (override with `CTXR_CLAUDE_MODEL`), an
+   empty MCP config so no servers load, and the prompt on stdin. Roughly
+   7-20 seconds per call.
+2. **Ollama** — if `http://localhost:11434` answers (override with
+   `CTXR_OLLAMA_HOST`). Picks an installed model whose name contains
+   `coder`, then `qwen`, then the first one; `CTXR_OLLAMA_MODEL` overrides.
+   Uses `format: "json"` and temperature 0.
+3. **Heuristic** — rule-based, always available, instant. Looks at changed
+   file names, the note, and the captured failing command.
 
-The heuristic result is shown immediately; if a higher-priority brain
-finishes within an 8-second timeout, its result replaces the heuristic
-summary in place. Selection can be pinned with `CTXR_BRAIN=heuristic|claude|ollama`.
+Each AI brain gets `CTXR_BRAIN_TIMEOUT` milliseconds (default 30000); on
+timeout, error, or unparseable output the next brain is tried, and the
+heuristic always answers in the end. `CTXR_BRAIN=claude|ollama|heuristic`
+pins a single brain, `--no-ai` on `pause` and `resume` skips the AI brains,
+and `CTXR_DEBUG=1` prints why a brain was skipped.
+
+When the AI runs:
+
+- `ctxr pause` (manual) runs the brains before writing the snapshot, with a
+  spinner.
+- `ctxr pause --auto` (from the shell hook) stores the heuristic summary
+  only, so a branch switch never blocks on a model.
+- `ctxr resume` (manual) upgrades a heuristic-only snapshot with the AI
+  brains and writes the result back, so the next resume is instant.
+- `ctxr resume --auto` shows whatever is stored, never calls a model.
+
+The prompt contains the note, changed files and diff stat, the last few
+commands with exit codes, the failing command and parsed error, and a diff
+excerpt capped at 4000 characters (`git.diffExcerpt` in the snapshot). All
+of it has already been through the secret scrub.
 
 ## Privacy model
 

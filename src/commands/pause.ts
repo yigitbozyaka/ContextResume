@@ -1,12 +1,15 @@
+import { spinner } from "@clack/prompts";
 import pc from "picocolors";
 import { summarize } from "../brain/heuristic.js";
-import { collectRepoState, git, isInsideRepo } from "../sensors/git.js";
+import { summarizeWithBrains } from "../brain/index.js";
+import { collectRepoState, diffExcerpt, git, isInsideRepo } from "../sensors/git.js";
 import { collectTerminalState } from "../sensors/terminal.js";
 import { readLatest, type Snapshot, snapshotVersion, writeSnapshot } from "../store/snapshot.js";
 
 export interface PauseOptions {
   branch?: string | undefined;
   auto?: boolean | undefined;
+  ai?: boolean | undefined;
 }
 
 const noteCarryOverMs = 60 * 60 * 1000;
@@ -21,20 +24,40 @@ export async function pause(
   const branch = options.branch ?? state.branch;
   const commit = options.branch ? await git(["rev-parse", "--short", branch], cwd) : state.commit;
   const carriedNote = note ?? (options.auto ? await recentNote(state.repoId, branch) : undefined);
-  const git_ = { modifiedFiles: state.modifiedFiles, diffStat: state.diffStat };
+  const excerpt = await diffExcerpt(cwd);
+  const gitState: Snapshot["git"] = {
+    modifiedFiles: state.modifiedFiles,
+    diffStat: state.diffStat,
+    ...(excerpt ? { diffExcerpt: excerpt } : {}),
+  };
   const terminal = await collectTerminalState(cwd, branch);
+  const input = { branch, note: carriedNote, git: gitState, terminal };
+  const wantsAi = options.ai !== false && !options.auto;
+  const aiSummary = wantsAi ? await summarizeWithSpinner(input) : summarize(input);
   const snapshot: Snapshot = {
     version: snapshotVersion,
     repoId: state.repoId,
     repo: { name: state.name, path: state.path, branch, commit },
     timestamp: new Date().toISOString(),
     ...(carriedNote ? { note: carriedNote } : {}),
-    git: git_,
+    git: gitState,
     terminal,
-    aiSummary: summarize({ note: carriedNote, git: git_, terminal }),
+    aiSummary,
   };
   await writeSnapshot(snapshot);
   return snapshot;
+}
+
+export async function summarizeWithSpinner(
+  input: Parameters<typeof summarize>[0] & { branch: string },
+) {
+  const progress = process.stderr.isTTY ? spinner({ output: process.stderr }) : undefined;
+  progress?.start("Summarizing");
+  const summary = await summarizeWithBrains(input, {
+    onAttempt: (brain) => progress?.message(`Summarizing with ${brain}`),
+  });
+  progress?.stop(`Summary by ${summary.provider}`);
+  return summary;
 }
 
 async function recentNote(repoId: string, branch: string): Promise<string | undefined> {

@@ -8,8 +8,9 @@ import {
   isInsideRepo,
   repoId,
 } from "../sensors/git.js";
-import { readLatest, type Snapshot } from "../store/snapshot.js";
+import { readLatest, type Snapshot, updateLatest } from "../store/snapshot.js";
 import { renderCard } from "../ui/card.js";
+import { summarizeWithSpinner } from "./pause.js";
 import { runCommand } from "./run.js";
 
 export interface ResumeResult {
@@ -20,6 +21,7 @@ export interface ResumeResult {
 export interface ResumeOptions {
   json?: boolean | undefined;
   auto?: boolean | undefined;
+  ai?: boolean | undefined;
 }
 
 export async function resume(
@@ -43,6 +45,20 @@ export async function resume(
   return base ? { snapshot, base } : { snapshot };
 }
 
+export async function upgradeSummary(snapshot: Snapshot): Promise<Snapshot> {
+  if (snapshot.aiSummary.provider !== "heuristic") return snapshot;
+  const aiSummary = await summarizeWithSpinner({
+    branch: snapshot.repo.branch,
+    note: snapshot.note,
+    git: snapshot.git,
+    terminal: snapshot.terminal,
+  });
+  if (aiSummary.provider === "heuristic") return snapshot;
+  const upgraded = { ...snapshot, aiSummary };
+  await updateLatest(upgraded);
+  return upgraded;
+}
+
 export async function resumeCommand(
   branch: string | undefined,
   options: ResumeOptions,
@@ -61,8 +77,10 @@ export async function resumeCommand(
     console.log(JSON.stringify(result, null, 2));
     return;
   }
-  console.log(renderCard(result.snapshot, result.base));
-  const failing = result.snapshot.terminal.lastCommand;
+  const wantsAi = options.ai !== false && !options.auto;
+  const snapshot = wantsAi ? await upgradeSummary(result.snapshot) : result.snapshot;
+  console.log(renderCard(snapshot, result.base));
+  const failing = snapshot.terminal.lastCommand;
   if (options.auto || !failing || !process.stdin.isTTY) return;
   const action = await select({
     message: "Next",
