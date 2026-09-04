@@ -9,3 +9,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Added
 
 - Repository bootstrap: TypeScript toolchain, CI, contribution guidelines, and architecture docs.
+- `ctxr pause`, `ctxr resume`, and `ctxr list` with a local snapshot store, git sensor, heuristic summary, base-branch comparison, and secret scrubbing.
