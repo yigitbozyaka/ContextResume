@@ -56,13 +56,14 @@ npm i -g context-resume
 npx context-resume --help
 ```
 
-## Shell setup (coming in v0.1.0)
+## Shell setup
 
 ContextResume does not read your shell history — history files carry no
 exit codes or output. Instead, `ctxr init` prints a shell snippet that hooks
-your prompt: it logs each command's `{timestamp, cwd, command, exit code}`
-and, only when your branch changes, calls `ctxr pause`/`ctxr resume` for
-you.
+your prompt: it logs each command's timestamp, directory, branch, and exit
+code to `.git/ctxr-log.tsv`, and only when your branch changes does it call
+`ctxr pause` for the branch you left and `ctxr resume` for the one you
+entered. Set `CTXR_NO_AUTO=1` to keep the log but skip the automatic card.
 
 ```bash
 # zsh
@@ -73,8 +74,15 @@ eval "$(ctxr init bash)"
 ```
 
 ```powershell
-# PowerShell
+# PowerShell (add to $PROFILE)
 Invoke-Expression (& ctxr init pwsh | Out-String)
+```
+
+To capture a command's output for the card, not just its exit code, run it
+through `ctxr run`:
+
+```bash
+ctxr run pnpm test tests/auth.test.ts
 ```
 
 ## Commands
@@ -85,7 +93,7 @@ Invoke-Expression (& ctxr init pwsh | Out-String)
 | `ctxr resume [branch]` | Show the resume card for the current (or given) branch. |
 | `ctxr list` | List all recorded branches and their snapshots. |
 | `ctxr diff` | Show what changed since the last snapshot. |
-| `ctxr run <cmd>` | Run a command, capturing the last ~30 lines of its output into the log. |
+| `ctxr run <cmd>` | Run a command, capturing the last ~40 lines of its output into the log. |
 | `ctxr init <bash\|zsh\|pwsh>` | Print the shell snippet to eval in your profile. |
 | `ctxr standup [--since 24h]` | Summarize activity across all repos and branches. |
 | `ctxr handoff` | Produce a markdown handoff for a PR comment or a teammate. |

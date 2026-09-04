@@ -1,0 +1,12 @@
+=================================== FAILURES ===================================
+_________________________________ test_refresh _________________________________
+
+    def test_refresh():
+        response = client.post("/refresh")
+>       assert response.status_code == 200
+E       assert 401 == 200
+
+tests/test_auth.py:42: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_auth.py::test_refresh - AssertionError: assert 401 == 200
+============================== 1 failed in 0.12s ==============================

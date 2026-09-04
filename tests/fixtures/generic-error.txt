@@ -1,0 +1,2 @@
+Uncaught Error: cannot read properties of undefined (reading 'foo') at src/utils/helper.js:15:9
+    at process.processImmediate (node:internal/timers:483:21)
