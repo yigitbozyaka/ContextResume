@@ -6,7 +6,7 @@
   "author": "Yiğit Bozyaka",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yigitbozyaka/ContextResume.git"
+    "url": "git+https://github.com/yigitbozyaka/ContextResume.git"
   },
   "keywords": [
     "cli",
@@ -18,8 +18,8 @@
   ],
   "type": "module",
   "bin": {
-    "ctxr": "./dist/cli.js",
-    "context-resume": "./dist/cli.js"
+    "ctxr": "dist/cli.js",
+    "context-resume": "dist/cli.js"
   },
   "files": [
     "dist",
