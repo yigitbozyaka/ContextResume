@@ -1,0 +1,56 @@
+{
+  "name": "context-resume",
+  "version": "0.0.0",
+  "description": "Freeze and restore your developer context when switching branches: git state, last failing command, and your intent.",
+  "license": "MIT",
+  "author": "Yiğit Bozyaka",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yigitbozyaka/context-resume.git"
+  },
+  "keywords": [
+    "cli",
+    "git",
+    "context-switching",
+    "developer-tools",
+    "claude-code",
+    "mcp"
+  ],
+  "type": "module",
+  "bin": {
+    "ctxr": "./dist/cli.js",
+    "context-resume": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@10.24.0",
+  "scripts": {
+    "dev": "tsx src/cli.ts",
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "changeset": "changeset",
+    "prepublishOnly": "pnpm build"
+  },
+  "dependencies": {
+    "commander": "^15.0.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.12",
+    "@changesets/cli": "^3.0.2",
+    "@types/node": "^26.4.1",
+    "tsup": "^8.5.1",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.0"
+  }
+}
