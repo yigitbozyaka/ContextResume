@@ -1,0 +1,8 @@
+> demo@ test /home/runner/work/ContextResume/ContextResume/demo-repo
+> node tests/auth.test.js tests/auth.test.ts
+
+FAIL tests/auth.test.ts
+  TokenExpiredError: jwt expired
+    at tests/auth.test.ts:42:15
+ ELIFECYCLE  Test failed. See above for more details.
+ WARN   Local package.json exists, but node_modules missing, did you mean to install?

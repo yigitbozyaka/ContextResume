@@ -42,6 +42,24 @@ describe("extractFailure", () => {
     });
   });
 
+  it("parses a jest failure without a bullet line, ignoring pnpm noise", () => {
+    const failure = extractFailure(loadFixture("jest-plain-fail.txt"));
+    expect(failure).toEqual({
+      file: "tests/auth.test.ts",
+      line: 42,
+      message: "TokenExpiredError: jwt expired",
+    });
+  });
+
+  it("returns undefined for pnpm lifecycle noise alone", () => {
+    const output = [
+      " ELIFECYCLE  Test failed. See above for more details.",
+      " WARN   Local package.json exists, but node_modules missing, did you mean to install?",
+    ].join("\n");
+
+    expect(extractFailure(output)).toBeUndefined();
+  });
+
   it("parses a vitest failure", () => {
     const failure = extractFailure(loadFixture("vitest-fail.txt"));
     expect(failure).toEqual({

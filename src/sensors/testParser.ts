@@ -14,10 +14,23 @@ const ANSI_PATTERN = new RegExp(
 
 const SKIPPED_PATH_SEGMENTS = [
   "node_modules",
+  "node:internal",
   "site-packages",
   "/rustc/",
   "/usr/lib/go",
   "runtime/",
+];
+
+const PACKAGE_MANAGER_NOISE_PREFIXES = [
+  "ELIFECYCLE",
+  "WARN",
+  "ERR_PNPM",
+  "npm ERR!",
+  "npm error",
+  "yarn run",
+  "error Command failed",
+  "Command failed with exit code",
+  "See above for more details",
 ];
 
 function stripAnsi(input: string): string {
@@ -26,6 +39,10 @@ function stripAnsi(input: string): string {
 
 function isSkippedPath(candidate: string): boolean {
   return SKIPPED_PATH_SEGMENTS.some((segment) => candidate.includes(segment));
+}
+
+function isPackageManagerNoise(trimmed: string): boolean {
+  return PACKAGE_MANAGER_NOISE_PREFIXES.some((prefix) => trimmed.startsWith(prefix));
 }
 
 function buildFailure(message: string, file?: string, line?: number): Failure {
@@ -134,37 +151,52 @@ function matchCargo(lines: string[]): Failure | undefined {
   return undefined;
 }
 
-function matchJest(lines: string[]): Failure | undefined {
-  const bulletIndex = lines.findIndex((entry) => /^\s*●\s+/.test(entry));
-  if (bulletIndex === -1) return undefined;
+const JEST_ERROR_MESSAGE_PATTERN = /^[A-Za-z_$][\w$.]*(?:Error|Exception)\b.*/;
 
-  let file: string | undefined;
-  let line: number | undefined;
-  for (let i = bulletIndex; i < lines.length; i++) {
-    const raw = lines[i];
-    if (raw === undefined) continue;
-    const match = raw.match(/at\s+.*?\(([^()]+):(\d+):(\d+)\)/);
-    if (match === null) continue;
-    const [, matchedFile, matchedLine] = match;
-    if (matchedFile === undefined || matchedLine === undefined) continue;
-    if (isSkippedPath(matchedFile)) continue;
-    file = matchedFile;
-    line = Number(matchedLine);
-    break;
-  }
+function isJestMessageLine(trimmed: string): boolean {
+  return JEST_ERROR_MESSAGE_PATTERN.test(trimmed) || trimmed.startsWith("expect(");
+}
+
+function matchJestStackFrame(trimmed: string): { file: string; line: number } | undefined {
+  const match = trimmed.match(/^at\s+(?:.*\()?([^()\s]+):(\d+):(\d+)\)?$/);
+  if (match === null) return undefined;
+  const [, file, lineNumber] = match;
+  if (file === undefined || lineNumber === undefined) return undefined;
+  if (isSkippedPath(file)) return undefined;
+  return { file, line: Number(lineNumber) };
+}
+
+function matchJest(lines: string[]): Failure | undefined {
+  const failIndex = lines.findIndex((entry) => /^\s*FAIL\s+\S+/.test(entry));
+  if (failIndex === -1) return undefined;
 
   let message: string | undefined;
-  for (let i = bulletIndex + 1; i < lines.length; i++) {
+  for (let i = failIndex + 1; i < lines.length; i++) {
     const raw = lines[i];
     if (raw === undefined) continue;
     const trimmed = raw.trim();
     if (trimmed.length === 0) continue;
-    if (/^at\s+/.test(trimmed)) break;
-    message = trimmed;
-    break;
+    if (isJestMessageLine(trimmed)) {
+      message = trimmed;
+      break;
+    }
   }
 
   if (message === undefined) return undefined;
+
+  let file: string | undefined;
+  let line: number | undefined;
+  for (let i = failIndex + 1; i < lines.length; i++) {
+    const raw = lines[i];
+    if (raw === undefined) continue;
+    const frame = matchJestStackFrame(raw.trim());
+    if (frame === undefined) continue;
+    file = frame.file;
+    line = frame.line;
+    break;
+  }
+
+  if (file === undefined || line === undefined) return undefined;
   return buildFailure(message, file, line);
 }
 
@@ -206,6 +238,7 @@ function matchGeneric(lines: string[]): Failure | undefined {
     if (trimmed.length === 0) continue;
     if (!/\b(error|exception|panic|failed)\b/i.test(trimmed)) continue;
     if (isSummaryNoise(trimmed)) continue;
+    if (isPackageManagerNoise(trimmed)) continue;
 
     const pathMatch = trimmed.match(/([^\s():]+):(\d+)(?::\d+)?/);
     if (pathMatch !== null) {
