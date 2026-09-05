@@ -5,6 +5,8 @@ instant you return.
 
 **Status: pre-release, under active development.**
 
+![ctxr run captures a failing test, ctxr pause saves a note, and switching back to the branch shows the resume card](docs/demo.gif)
+
 ## The problem
 
 Switching branches or tasks throws away the state that actually matters:
