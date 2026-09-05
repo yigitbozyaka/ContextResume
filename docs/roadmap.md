@@ -1,6 +1,6 @@
 # Roadmap
 
-**Current status:** Phase 5 complete. Next: release and publish to npm.
+**Current status:** v0.3.0 released; all five phases complete. Next: real-world use, then v1.0.0.
 
 This roadmap tracks ContextResume from bootstrap to a v1.0.0 npm release.
 Each phase lists the planned PRs; check them off as they land.
@@ -52,9 +52,9 @@ Target: **v0.2.0**.
 - [x] `feat: add ctxr mcp stdio server (get_context, list_snapshots, save_snapshot)`
 - [x] `feat: add ctxr standup command`
 - [x] `docs: add demo GIF` (rendered by the Demo GIF workflow from `docs/demo.tape`)
-- [ ] `chore: publish to npm and release v1.0.0`
+- [x] `chore: release v0.3.0` (npm publish follows each release)
 
-Target: **v1.0.0**.
+Target: **v1.0.0** once the shell hooks have seen real use on macOS and Linux.
 
 ## Open questions
 
