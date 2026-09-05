@@ -232,8 +232,15 @@ Every commit carries the co-author trailer.
 
 ## Contributing
 
-Issues and PRs are welcome. See [CONTRIBUTING.md](./CONTRIBUTING.md) and
-[docs/roadmap.md](./docs/roadmap.md).
+The easiest first contribution is a test-runner parser: drop a real failing
+output into `tests/fixtures/`, add a matcher in `src/sensors/testParser.ts`,
+assert file, line and message in one test. Mocha, RSpec, dotnet test,
+Gradle/Maven and PHPUnit are open as
+[good first issues](https://github.com/yigitbozyaka/ContextResume/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
+Shell hooks, a Homebrew formula and a Slack standup format are up for grabs too.
+
+Setup, conventions and the release flow are in [CONTRIBUTING.md](./CONTRIBUTING.md);
+what is planned is in [docs/roadmap.md](./docs/roadmap.md).
 
 ## References
 
