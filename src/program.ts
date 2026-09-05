@@ -1,4 +1,3 @@
-import { createRequire } from "node:module";
 import { Command } from "commander";
 import { diffCommand } from "./commands/diff.js";
 import { handoffCommand } from "./commands/handoff.js";
@@ -9,8 +8,7 @@ import { pauseCommand } from "./commands/pause.js";
 import { resumeCommand } from "./commands/resume.js";
 import { runCliCommand } from "./commands/run.js";
 import { standupCommand } from "./commands/standup.js";
-
-const { version } = createRequire(import.meta.url)("../package.json") as { version: string };
+import { version } from "./version.js";
 
 export function buildProgram(): Command {
   const program = new Command("ctxr")
