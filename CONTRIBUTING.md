@@ -68,7 +68,8 @@ to assert the parser extracts the right file, line, and error message.
 Releases are automated. Every user-facing PR carries a changeset; when it
 lands on `main`, the Release workflow opens or updates a "chore: release"
 pull request that bumps `package.json`, the plugin manifests, and
-`CHANGELOG.md`. Merging that PR publishes to npm through GitHub Actions
-trusted publishing (no tokens in the repo) and creates the GitHub release.
+`CHANGELOG.md`. Merging that PR runs `npm publish --provenance` through GitHub Actions
+trusted publishing (no tokens in the repo), tags the commit, and creates the
+GitHub release.
 Nothing is published by hand.
 
