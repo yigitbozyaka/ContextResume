@@ -69,8 +69,8 @@ Releases are automated. Every user-facing PR carries a changeset; when it
 lands on `main`, the Release workflow opens or updates a "chore: release"
 pull request that bumps `package.json`, the plugin manifests, and
 `CHANGELOG.md`. Merging that PR runs `npm stage publish --provenance` through GitHub Actions
-trusted publishing (no tokens in the repo), tags the commit, and creates the
-GitHub release. The version then waits in npm's **Staged Packages** tab until a
+trusted publishing (no tokens in the repo); `scripts/github-release.mjs` then
+pushes the `vX.Y.Z` tag and creates the GitHub release from the changelog. The version then waits in npm's **Staged Packages** tab until a
 maintainer reviews it and clicks Approve (2FA), which is the only manual step
 and the last line of defense against a compromised workflow.
 

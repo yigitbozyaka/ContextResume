@@ -41,7 +41,7 @@
     "changeset": "changeset",
     "prepublishOnly": "pnpm build",
     "version": "changeset version && node scripts/sync-plugin-version.mjs && biome format --write plugin/.claude-plugin/plugin.json .claude-plugin/marketplace.json",
-    "release": "npm stage publish --provenance --access public && changeset tag"
+    "release": "npm stage publish --provenance --access public && node scripts/github-release.mjs"
   },
   "dependencies": {
     "@clack/prompts": "^1.7.0",
