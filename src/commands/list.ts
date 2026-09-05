@@ -18,5 +18,6 @@ export async function listCommand(options: { all?: boolean }, cwd = process.cwd(
       ? `${pc.dim(s.repo.name)} ${pc.cyan(s.repo.branch)}`
       : pc.cyan(s.repo.branch);
     console.log(`${where}  ${pc.dim(relativeTime(s.timestamp))}\n  ${s.aiSummary.intent}`);
+    if (s.terminal.lastCommand) console.log(`  ${pc.red("blocked:")} ${s.terminal.lastCommand}`);
   }
 }
