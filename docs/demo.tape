@@ -8,7 +8,7 @@ Set Theme "Catppuccin Mocha"
 Set TypingSpeed 40ms
 
 Hide
-Type "cd demo-repo && eval \"$(ctxr init bash)\" && git switch -q feature/jwt-auth && clear"
+Type `cd demo-repo && eval "$(ctxr init bash)" && git switch -q feature/jwt-auth && clear`
 Enter
 Show
 
@@ -16,7 +16,7 @@ Type "ctxr run pnpm test tests/auth.test.ts"
 Enter
 Sleep 2.5s
 
-Type "ctxr pause 'refactoring token refresh, clock skew breaks the test'"
+Type `ctxr pause "refactoring token refresh, clock skew breaks the test"`
 Enter
 Sleep 1.5s
 
