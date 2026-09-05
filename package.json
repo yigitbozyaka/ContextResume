@@ -40,7 +40,8 @@
     "lint:fix": "biome check --write .",
     "changeset": "changeset",
     "prepublishOnly": "pnpm build",
-    "version": "changeset version && node scripts/sync-plugin-version.mjs && biome format --write plugin/.claude-plugin/plugin.json .claude-plugin/marketplace.json"
+    "version": "changeset version && node scripts/sync-plugin-version.mjs && biome format --write plugin/.claude-plugin/plugin.json .claude-plugin/marketplace.json",
+    "release": "npm publish --provenance --access public && changeset tag"
   },
   "dependencies": {
     "@clack/prompts": "^1.7.0",
