@@ -1,4 +1,3 @@
-import { createRequire } from "node:module";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
@@ -7,8 +6,7 @@ import { resume } from "../commands/resume.js";
 import { currentBranch, repoId } from "../sensors/git.js";
 import { listLatest } from "../store/snapshot.js";
 import { renderMarkdown } from "../ui/markdown.js";
-
-const { version } = createRequire(import.meta.url)("../../package.json") as { version: string };
+import { version } from "../version.js";
 
 const repoInput = z
   .string()

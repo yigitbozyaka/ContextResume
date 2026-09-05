@@ -25,3 +25,5 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build
+      - run: node dist/cli.js --version
+      - run: node dist/cli.js --help
