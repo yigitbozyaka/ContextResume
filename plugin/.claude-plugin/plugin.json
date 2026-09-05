@@ -1,6 +1,6 @@
 {
   "name": "context-resume",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Shared memory between you and Claude Code: the branch context ContextResume saved is injected at session start, and every turn is snapshotted before it is lost.",
   "author": {
     "name": "Yiğit Bozyaka"
