@@ -49,11 +49,49 @@ The hooks call `ctxr` from the PATH, so the CLI has to be installed globally.
 claude --plugin-dir ./plugin
 ```
 
-## 3. MCP server (planned)
+## 3. The MCP server
 
-`ctxr mcp` will expose `get_context`, `list_snapshots`, and `save_snapshot`
-over stdio for Claude Desktop and any other MCP client. Tracked in
-[`roadmap.md`](./roadmap.md).
+`ctxr mcp` speaks the Model Context Protocol over stdio, so Claude Code,
+Claude Desktop, and any other MCP client can read and write your context
+directly instead of shelling out.
+
+| Tool | Input | Result |
+|---|---|---|
+| `get_context` | `branch?`, `repo?` | The branch's snapshot as markdown: intent, last failing command, parsed error, changed files, recent commands, and a diff excerpt. Says so plainly when there is no snapshot yet. |
+| `list_snapshots` | `repo?`, `all?` | JSON array of the latest snapshot per branch — repo name, path, branch, timestamp, intent, next action, and the last command when there is one. `all` widens it from one repository to every recorded one. |
+| `save_snapshot` | `note?`, `repo?` | Freezes the repository's current context with the note and reports the branch and how many files changed. |
+
+`save_snapshot` never calls a summarizer: inside an MCP session the client
+is the model, so the note it writes is the summary and no nested `claude`
+is spawned.
+
+Every tool takes an optional `repo`, an absolute path to a git checkout.
+It defaults to the server's working directory, so a client can ask about a
+checkout other than the one the server was started in.
+
+### Add it to Claude Code
+
+```
+claude mcp add context-resume -- ctxr mcp
+```
+
+### Add it to Claude Desktop
+
+In `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "context-resume": {
+      "command": "ctxr",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+Both entries call `ctxr` from the PATH, so the CLI has to be installed
+globally (`npm i -g context-resume`).
 
 ## Why hooks instead of a bigger CLAUDE.md
 

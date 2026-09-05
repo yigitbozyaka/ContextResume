@@ -1,0 +1,37 @@
+name: Demo GIF
+
+on:
+  workflow_dispatch:
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build && npm link
+      - name: Prepare a demo repository
+        run: |
+          git config --global user.email demo@example.com
+          git config --global user.name demo
+          git init -q -b main demo-repo
+          cd demo-repo
+          mkdir -p src tests
+          printf 'export const tolerance = 0;\n' > src/auth.ts
+          printf 'console.error("FAIL tests/auth.test.ts\\n  TokenExpiredError: jwt expired\\n    at tests/auth.test.ts:42:15"); process.exit(1);\n' > tests/auth.test.js
+          printf '{"name":"demo","scripts":{"test":"node tests/auth.test.js"}}\n' > package.json
+          git add . && git commit -qm init
+          git switch -qc feature/jwt-auth
+          printf 'export const tolerance = 30;\n' > src/auth.ts
+      - uses: charmbracelet/vhs-action@v2
+        with:
+          path: docs/demo.tape
+      - uses: actions/upload-artifact@v4
+        with:
+          name: demo-gif
+          path: docs/demo.gif
