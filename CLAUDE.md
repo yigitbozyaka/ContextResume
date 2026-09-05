@@ -26,7 +26,8 @@ git state, last failing command, and intent. TypeScript, Node >= 20, pnpm.
 - `src/brain/` summarizers: heuristic, claude, ollama, and the selector
 - `src/store/` snapshot paths, read/write, repo identity
 - `src/shell/` bash/zsh/pwsh snippets printed by `ctxr init`
-- `src/ui/` terminal card rendering
+- `src/ui/` terminal card and markdown rendering
+- `plugin/` Claude Code plugin (hooks + skill); `.claude-plugin/marketplace.json` publishes it
 - `tests/` vitest; parser fixtures live in `tests/fixtures/`
 
 ## Conventions

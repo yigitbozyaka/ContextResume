@@ -10,6 +10,9 @@ import {
 } from "../sensors/git.js";
 import { readLatest, type Snapshot, updateLatest } from "../store/snapshot.js";
 import { renderCard } from "../ui/card.js";
+import { renderMarkdown } from "../ui/markdown.js";
+import { diffCommand } from "./diff.js";
+import { launchClaude } from "./handoff.js";
 import { summarizeWithSpinner } from "./pause.js";
 import { runCommand } from "./run.js";
 
@@ -20,6 +23,7 @@ export interface ResumeResult {
 
 export interface ResumeOptions {
   json?: boolean | undefined;
+  format?: string | undefined;
   auto?: boolean | undefined;
   ai?: boolean | undefined;
 }
@@ -73,22 +77,30 @@ export async function resumeCommand(
     process.exitCode = 1;
     return;
   }
-  if (options.json) {
+  if (options.json || options.format === "json") {
     console.log(JSON.stringify(result, null, 2));
     return;
   }
   const wantsAi = options.ai !== false && !options.auto;
   const snapshot = wantsAi ? await upgradeSummary(result.snapshot) : result.snapshot;
+  if (options.format === "markdown") {
+    process.stdout.write(renderMarkdown(snapshot, result.base));
+    return;
+  }
   console.log(renderCard(snapshot, result.base));
+  if (options.auto || !process.stdin.isTTY) return;
   const failing = snapshot.terminal.lastCommand;
-  if (options.auto || !failing || !process.stdin.isTTY) return;
   const action = await select({
     message: "Next",
     options: [
-      { value: "rerun", label: `Rerun ${failing}` },
+      ...(failing ? [{ value: "rerun", label: `Rerun ${failing}` }] : []),
+      { value: "claude", label: "Hand off to Claude Code" },
+      { value: "diff", label: "Show what changed since the snapshot" },
       { value: "quit", label: "Quit" },
     ],
   });
   if (isCancel(action) || action === "quit") return;
-  process.exitCode = await runCommand([failing]);
+  if (action === "rerun" && failing) process.exitCode = await runCommand([failing]);
+  if (action === "claude") process.exitCode = await launchClaude(snapshot, result.base);
+  if (action === "diff") await diffCommand(snapshot.repo.branch);
 }

@@ -13,6 +13,7 @@ export interface PauseOptions {
 }
 
 const noteCarryOverMs = 60 * 60 * 1000;
+const autoCoalesceMs = 15 * 60 * 1000;
 
 export async function pause(
   note: string | undefined,
@@ -44,7 +45,7 @@ export async function pause(
     terminal,
     aiSummary,
   };
-  await writeSnapshot(snapshot);
+  await writeSnapshot(snapshot, options.auto ? { coalesceMs: autoCoalesceMs } : {});
   return snapshot;
 }
 

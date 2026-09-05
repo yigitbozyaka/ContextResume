@@ -1,5 +1,7 @@
 import { createRequire } from "node:module";
 import { Command } from "commander";
+import { diffCommand } from "./commands/diff.js";
+import { handoffCommand } from "./commands/handoff.js";
 import { initCommand, supportedShells } from "./commands/init.js";
 import { listCommand } from "./commands/list.js";
 import { pauseCommand } from "./commands/pause.js";
@@ -29,7 +31,8 @@ export function buildProgram(): Command {
     .alias("r")
     .argument("[branch]", "branch to resume (defaults to the current one)")
     .option("--json", "print the snapshot as JSON instead of the card")
-    .option("--auto", "non-interactive mode used by the shell hook")
+    .option("--format <format>", "output format: card, markdown, or json", "card")
+    .option("--auto", "non-interactive mode used by hooks")
     .option("--no-ai", "skip AI summarizers and use the heuristic only")
     .description("Show the resume card for a branch")
     .action(resumeCommand);
@@ -40,6 +43,19 @@ export function buildProgram(): Command {
     .option("-a, --all", "include every repository, not only the current one")
     .description("List saved snapshots")
     .action(listCommand);
+
+  program
+    .command("diff")
+    .alias("d")
+    .argument("[branch]", "branch whose snapshot to compare against")
+    .description("Show commits and changes since the last snapshot")
+    .action((branch?: string) => diffCommand(branch));
+
+  program
+    .command("handoff")
+    .argument("[branch]", "branch to hand off (defaults to the current one)")
+    .description("Print the snapshot as markdown for a PR comment, a teammate, or an agent")
+    .action(handoffCommand);
 
   program
     .command("run")
