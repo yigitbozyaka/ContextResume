@@ -4,9 +4,11 @@ import { diffCommand } from "./commands/diff.js";
 import { handoffCommand } from "./commands/handoff.js";
 import { initCommand, supportedShells } from "./commands/init.js";
 import { listCommand } from "./commands/list.js";
+import { mcpCommand } from "./commands/mcp.js";
 import { pauseCommand } from "./commands/pause.js";
 import { resumeCommand } from "./commands/resume.js";
 import { runCliCommand } from "./commands/run.js";
+import { standupCommand } from "./commands/standup.js";
 
 const { version } = createRequire(import.meta.url)("../package.json") as { version: string };
 
@@ -58,11 +60,25 @@ export function buildProgram(): Command {
     .action(handoffCommand);
 
   program
+    .command("standup")
+    .option("--since <duration>", "look-back window such as 24h, 2d, or 1w", "24h")
+    .option("--format <format>", "output format: text or markdown", "text")
+    .description("Summarize recent activity across every repository and branch")
+    .action(standupCommand);
+
+  program
     .command("run")
     .argument("<command...>", "command to run")
     .passThroughOptions()
     .description("Run a command and keep the tail of its output for the resume card")
     .action(runCliCommand);
+
+  program
+    .command("mcp")
+    .description(
+      "Start the stdio MCP server exposing get_context, list_snapshots, and save_snapshot",
+    )
+    .action(mcpCommand);
 
   program
     .command("init")

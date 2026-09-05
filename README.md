@@ -95,7 +95,7 @@ ctxr run pnpm test tests/auth.test.ts
 | `ctxr diff` | Show commits and working-tree changes since the snapshot. |
 | `ctxr run <cmd>` | Run a command, capturing the last ~40 lines of its output into the log. |
 | `ctxr init <bash\|zsh\|pwsh>` | Print the shell snippet to eval in your profile. |
-| `ctxr standup [--since 24h]` | Summarize activity across all repos and branches. |
+| `ctxr standup [--since 24h] [--format markdown]` | Summarize recent activity across every repo and branch. |
 | `ctxr handoff` | Print the snapshot as markdown for a PR comment, a teammate, or an agent. |
 | `ctxr mcp` | Start the stdio MCP server for Claude Code / Claude Desktop. |
 
@@ -138,8 +138,10 @@ npm i -g context-resume
 /plugin install context-resume@context-resume
 ```
 
-- **MCP server** (planned) — `ctxr mcp` will expose `get_context`,
-  `list_snapshots`, and `save_snapshot` to any MCP client.
+- **MCP server** — `ctxr mcp` serves `get_context`, `list_snapshots`, and
+  `save_snapshot` over stdio, so Claude Code (`claude mcp add
+  context-resume -- ctxr mcp`), Claude Desktop, or any other MCP client can
+  read and write your context directly.
 
 ## Privacy
 

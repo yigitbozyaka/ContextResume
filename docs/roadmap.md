@@ -1,6 +1,6 @@
 # Roadmap
 
-**Current status:** v0.2.0 released. Next: Phase 5 (MCP server, standup, demo GIF, v1.0.0).
+**Current status:** Phase 5 features complete. Next: render the demo GIF, release v1.0.0.
 
 This roadmap tracks ContextResume from bootstrap to a v1.0.0 npm release.
 Each phase lists the planned PRs; check them off as they land.
@@ -49,9 +49,9 @@ Target: **v0.2.0**.
 
 ## Phase 5 — MCP server, standup, publish
 
-- [ ] `feat: add ctxr mcp stdio server (get_context, list_snapshots, save_snapshot)`
-- [ ] `feat: add ctxr standup command`
-- [ ] `docs: add demo GIF`
+- [x] `feat: add ctxr mcp stdio server (get_context, list_snapshots, save_snapshot)`
+- [x] `feat: add ctxr standup command`
+- [ ] `docs: add demo GIF` (tape and workflow in place; run the Demo GIF action and commit `docs/demo.gif`)
 - [ ] `chore: publish to npm and release v1.0.0`
 
 Target: **v1.0.0**.
