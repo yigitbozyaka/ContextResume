@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.1
+
+### Patch Changes
+
+- 8f2f4e3: `ctxr list` now shows the last failing command under each branch.
+
 ## 0.3.0
 
 ### Minor Changes

@@ -5,14 +5,14 @@
   },
   "metadata": {
     "description": "ContextResume plugin for Claude Code",
-    "version": "0.3.0"
+    "version": "0.3.1"
   },
   "plugins": [
     {
       "name": "context-resume",
       "source": "./plugin",
       "description": "Inject the saved branch context at session start and snapshot every turn before it is lost.",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "category": "productivity"
     }
   ]
