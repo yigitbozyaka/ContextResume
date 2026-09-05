@@ -1,6 +1,6 @@
 # Roadmap
 
-**Current status:** Phase 4 complete. Next: tag v0.3.0, then Phase 5 (MCP, standup, demo).
+**Current status:** v0.2.0 released. Next: Phase 5 (MCP server, standup, demo GIF, v1.0.0).
 
 This roadmap tracks ContextResume from bootstrap to a v1.0.0 npm release.
 Each phase lists the planned PRs; check them off as they land.
@@ -43,9 +43,9 @@ Target: **v0.1.0**.
 - [x] `feat: add Claude Code plugin (SessionStart, Stop, PreCompact hooks, /ctxr skill)`
 - [x] `feat: add ctxr handoff command for PR comments and teammates`
 - [x] `feat: add ctxr diff command`
-- [ ] `chore: release v0.3.0`
+- [x] `chore: release v0.2.0`
 
-Target: **v0.3.0**.
+Target: **v0.2.0**.
 
 ## Phase 5 — MCP server, standup, publish
 
