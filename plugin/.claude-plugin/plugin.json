@@ -1,0 +1,12 @@
+{
+  "name": "context-resume",
+  "version": "0.3.0",
+  "description": "Shared memory between you and Claude Code: the branch context ContextResume saved is injected at session start, and every turn is snapshotted before it is lost.",
+  "author": {
+    "name": "Yiğit Bozyaka"
+  },
+  "homepage": "https://github.com/yigitbozyaka/ContextResume",
+  "repository": "https://github.com/yigitbozyaka/ContextResume",
+  "license": "MIT",
+  "keywords": ["context", "git", "branch", "resume", "memory"]
+}

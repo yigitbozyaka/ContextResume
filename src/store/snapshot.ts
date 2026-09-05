@@ -1,4 +1,4 @@
-import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { branchDir, latestPath, reposDir } from "./paths.js";
 import { scrubSecrets } from "./scrub.js";
@@ -35,14 +35,35 @@ export interface Snapshot {
   aiSummary: Summary;
 }
 
-export async function writeSnapshot(snapshot: Snapshot): Promise<string> {
+export interface WriteOptions {
+  coalesceMs?: number;
+}
+
+export async function writeSnapshot(
+  snapshot: Snapshot,
+  options: WriteOptions = {},
+): Promise<string> {
   const dir = branchDir(snapshot.repoId, snapshot.repo.branch);
   await mkdir(dir, { recursive: true });
+  if (options.coalesceMs) await removeRecentSnapshotFile(snapshot, options.coalesceMs);
   const json = scrubSecrets(JSON.stringify(snapshot, null, 2));
-  const file = join(dir, `${snapshot.timestamp.replace(/[:.]/g, "-")}.json`);
+  const file = join(dir, timestampFileName(snapshot.timestamp));
   await writeFile(file, json);
   await writeFile(latestPath(snapshot.repoId, snapshot.repo.branch), json);
   return file;
+}
+
+function timestampFileName(timestamp: string): string {
+  return `${timestamp.replace(/[:.]/g, "-")}.json`;
+}
+
+async function removeRecentSnapshotFile(snapshot: Snapshot, coalesceMs: number): Promise<void> {
+  const latest = await readLatest(snapshot.repoId, snapshot.repo.branch);
+  if (!latest || latest.timestamp === snapshot.timestamp) return;
+  const age = new Date(snapshot.timestamp).getTime() - new Date(latest.timestamp).getTime();
+  if (age < 0 || age >= coalesceMs) return;
+  const dir = branchDir(snapshot.repoId, snapshot.repo.branch);
+  await rm(join(dir, timestampFileName(latest.timestamp)), { force: true });
 }
 
 export async function readLatest(repoId: string, branch: string): Promise<Snapshot | undefined> {

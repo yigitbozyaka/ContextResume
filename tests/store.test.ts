@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdtemp, readdir, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -107,5 +107,61 @@ describe("listLatest", () => {
     const filtered = await listLatest("repo-a");
     expect(filtered).toHaveLength(1);
     expect(filtered[0]?.repoId).toBe("repo-a");
+  });
+});
+
+describe("coalescing", () => {
+  const coalesceMs = 15 * 60 * 1000;
+  const t0 = new Date("2026-01-01T00:00:00.000Z").getTime();
+
+  async function timestampedFiles(repoId: string, branch: string): Promise<string[]> {
+    const files = await readdir(branchDir(repoId, branch));
+    return files.filter((f) => f !== "latest.json");
+  }
+
+  it("coalesces a snapshot written within the window into the previous file", async () => {
+    const a = buildSnapshot({ timestamp: new Date(t0).toISOString() });
+    const b = buildSnapshot({ timestamp: new Date(t0 + 5 * 60 * 1000).toISOString() });
+    await writeSnapshot(a, { coalesceMs });
+    await writeSnapshot(b, { coalesceMs });
+
+    const files = await timestampedFiles(a.repoId, a.repo.branch);
+    expect(files).toHaveLength(1);
+    const loaded = await readLatest(a.repoId, a.repo.branch);
+    expect(loaded).toEqual(b);
+  });
+
+  it("keeps the coalesced file's snapshot when writing beyond the window", async () => {
+    const a = buildSnapshot({ timestamp: new Date(t0).toISOString() });
+    const b = buildSnapshot({ timestamp: new Date(t0 + 5 * 60 * 1000).toISOString() });
+    const c = buildSnapshot({ timestamp: new Date(t0 + 20 * 60 * 1000).toISOString() });
+    await writeSnapshot(a, { coalesceMs });
+    await writeSnapshot(b, { coalesceMs });
+    await writeSnapshot(c, { coalesceMs });
+
+    const files = await timestampedFiles(a.repoId, a.repo.branch);
+    expect(files).toHaveLength(2);
+    const loaded = await readLatest(a.repoId, a.repo.branch);
+    expect(loaded).toEqual(c);
+  });
+
+  it("never removes files when no options are given", async () => {
+    const a = buildSnapshot({ timestamp: new Date(t0).toISOString() });
+    const b = buildSnapshot({ timestamp: new Date(t0 + 5 * 60 * 1000).toISOString() });
+    await writeSnapshot(a);
+    await writeSnapshot(b);
+
+    const files = await timestampedFiles(a.repoId, a.repo.branch);
+    expect(files).toHaveLength(2);
+  });
+
+  it("works when coalescing and there is no previous snapshot", async () => {
+    const a = buildSnapshot({ timestamp: new Date(t0).toISOString() });
+    await writeSnapshot(a, { coalesceMs });
+
+    const files = await timestampedFiles(a.repoId, a.repo.branch);
+    expect(files).toHaveLength(1);
+    const loaded = await readLatest(a.repoId, a.repo.branch);
+    expect(loaded).toEqual(a);
   });
 });

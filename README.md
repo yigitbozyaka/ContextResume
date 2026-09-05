@@ -90,13 +90,13 @@ ctxr run pnpm test tests/auth.test.ts
 | Command | Description |
 |---|---|
 | `ctxr pause [note]` | Freeze the current branch's context, with an optional short note. |
-| `ctxr resume [branch]` | Show the resume card for the current (or given) branch. |
+| `ctxr resume [branch]` | Show the resume card (`--format markdown\|json` for machines). |
 | `ctxr list` | List all recorded branches and their snapshots. |
-| `ctxr diff` | Show what changed since the last snapshot. |
+| `ctxr diff` | Show commits and working-tree changes since the snapshot. |
 | `ctxr run <cmd>` | Run a command, capturing the last ~40 lines of its output into the log. |
 | `ctxr init <bash\|zsh\|pwsh>` | Print the shell snippet to eval in your profile. |
 | `ctxr standup [--since 24h]` | Summarize activity across all repos and branches. |
-| `ctxr handoff` | Produce a markdown handoff for a PR comment or a teammate. |
+| `ctxr handoff` | Print the snapshot as markdown for a PR comment, a teammate, or an agent. |
 | `ctxr mcp` | Start the stdio MCP server for Claude Code / Claude Desktop. |
 
 ## AI summaries
@@ -121,17 +121,25 @@ Pass `--no-ai` to `pause` or `resume` to skip models for one call.
 
 ## Claude Code integration
 
-ContextResume is built to hand context to Claude Code, not just to a human:
+ContextResume treats Claude Code as a second developer who shares your
+memory. Details in [docs/claude-code.md](./docs/claude-code.md).
 
-- **`[C]` handoff** — from the resume card, writes the snapshot as markdown
-  and launches `claude` with it as context, so you don't retype what you
-  were doing.
-- **Plugin** (`plugin/`) — a `SessionStart` hook injects
-  `ctxr resume --format=markdown` into a new session, `Stop` and
-  `PreCompact` hooks run `ctxr pause --auto` so context is saved before it's
-  lost, and a `/ctxr` skill exposes the same actions inside Claude Code.
-- **MCP server** — `ctxr mcp` starts a stdio server exposing `get_context`,
-  `list_snapshots`, and `save_snapshot` tools to any MCP-aware client.
+- **Handoff** — pick "Hand off to Claude Code" on the resume card, or run
+  `ctxr handoff` for markdown you can paste anywhere. Claude starts with the
+  intent, the failing command, the error, and the next step already in hand.
+- **Plugin** — a `SessionStart` hook injects the branch's snapshot into every
+  new session; `Stop` and `PreCompact` hooks snapshot the branch after each
+  turn and before compaction; the `/context-resume:ctxr` skill lets Claude
+  save a note in its own words.
+
+```
+npm i -g context-resume
+/plugin marketplace add yigitbozyaka/ContextResume
+/plugin install context-resume@context-resume
+```
+
+- **MCP server** (planned) — `ctxr mcp` will expose `get_context`,
+  `list_snapshots`, and `save_snapshot` to any MCP client.
 
 ## Privacy
 
