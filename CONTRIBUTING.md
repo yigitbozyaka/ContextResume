@@ -62,3 +62,13 @@ If you add support for a new test runner's output format (alongside jest,
 vitest, pytest, go test, cargo test), include a fixture: a captured sample
 of that runner's real stdout/stderr under the parser's test fixtures, used
 to assert the parser extracts the right file, line, and error message.
+
+## Releases
+
+Releases are automated. Every user-facing PR carries a changeset; when it
+lands on `main`, the Release workflow opens or updates a "chore: release"
+pull request that bumps `package.json`, the plugin manifests, and
+`CHANGELOG.md`. Merging that PR publishes to npm through GitHub Actions
+trusted publishing (no tokens in the repo) and creates the GitHub release.
+Nothing is published by hand.
+
