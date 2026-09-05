@@ -1,6 +1,6 @@
 # Roadmap
 
-**Current status:** v0.3.0 released; all five phases complete. Next: real-world use, then v1.0.0.
+**Current status:** v0.3.0 released; all five phases complete. Releases are automated (changesets + trusted publishing). Next: real-world use, then v1.0.0.
 
 This roadmap tracks ContextResume from bootstrap to a v1.0.0 npm release.
 Each phase lists the planned PRs; check them off as they land.
