@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.0
+
+### Minor Changes
+
+- 0da80d9: Add `ctxr mcp`, a stdio MCP server exposing `get_context`, `list_snapshots`, and `save_snapshot` to Claude Code, Claude Desktop, and any MCP client, and `ctxr standup [--since 24h] [--format markdown]` summarizing recent activity across every repository and branch.
+
+### Patch Changes
+
+- c0fd3f4: Fix the built CLI failing to start with "Cannot find module '../../package.json'" after the MCP server was added; the version is now read from one module and CI smoke-tests the bundle.
+- b6efa2a: Parse Jest-style failures that have no `●` bullet and ignore pnpm/npm/yarn noise lines such as `ELIFECYCLE` when picking the error to show on the card.
+
 ## 0.2.0
 
 ### Minor Changes

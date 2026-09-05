@@ -1,6 +1,6 @@
 {
   "name": "context-resume",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Freeze and restore your developer context when switching branches: git state, last failing command, and your intent.",
   "license": "MIT",
   "author": "Yiğit Bozyaka",
